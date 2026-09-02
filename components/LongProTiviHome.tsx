@@ -69,11 +69,21 @@ const modules: Array<{ id: ProModule; label: string }> = [
   { id: "boss", label: "Boss Console" },
 ];
 
+const appLinks = [
+  ["Home", "/home"],
+  ["superBUY", "/store"],
+  ["Live", "/live"],
+  ["Thông báo", "/notify"],
+  ["Menu user", "/dashboard"],
+  ["Long Lab", "/dashboard"],
+];
+
 const moduleCopy: Record<ProModule, {
   kicker: string;
   title: string;
   output: string;
   note: string;
+  canvas: string;
   cards: Array<[string, string, string]>;
 }> = {
   overview: {
@@ -81,6 +91,7 @@ const moduleCopy: Record<ProModule, {
     title: "Canvas chuẩn 16:9",
     output: "Output: 720p",
     note: "Balanced cost, smooth playback, adaptive bitrate",
+    canvas: "HQ điều phối toàn bộ livestream, AI, thiết bị và chất lượng phát.",
     cards: signalCards,
   },
   live: {
@@ -88,6 +99,7 @@ const moduleCopy: Record<ProModule, {
     title: "Khởi tạo và điều hành phiên live",
     output: "Room: standby",
     note: "Chỉ mở phòng khi bấm Bắt đầu live",
+    canvas: "Bàn Live nhận form tạo phòng nhanh, giữ phòng ở trạng thái chờ và mở live khi chủ phòng xác nhận.",
     cards: [
       ["Quick room", "Nhận form từ Home", "Chờ chủ phòng xác nhận"],
       ["Ticket gate", "Soát vé, QRFlow, trạng thái vào phòng", "AI chuyển Boss khi chưa chắc"],
@@ -100,6 +112,7 @@ const moduleCopy: Record<ProModule, {
     title: "Bàn chỉnh âm thanh, hình ảnh và layout",
     output: "Mixer: saved preset",
     note: "Nút âm lượng nổi đã bỏ, điều chỉnh tập trung tại Mixer",
+    canvas: "Mixer là nơi gom toàn bộ cài đặt trong phòng live ra ngoài: âm thanh, video, layout, vật thể và preset.",
     cards: [
       ["Audio", "Mic, nhạc nền, âm thanh ngoài tivi", "Preset theo thiết bị"],
       ["Video", "720p/1200p, 4K Enhanced khi đủ điều kiện", "Flash điều phối"],
@@ -112,6 +125,7 @@ const moduleCopy: Record<ProModule, {
     title: "AI Boss, AI Flash và AI User",
     output: "AI: startup mode",
     note: "Mặc định không thu phí, đề xuất nhạy cảm gửi duyệt",
+    canvas: "Các AI làm việc theo cấp quyền, gửi đề xuất vào hộp thông báo và chỉ xin xác nhận khi vượt rule.",
     cards: [
       ["AI Boss", "Điều phối quyền và báo cáo hằng ngày", "Boss thật duyệt"],
       ["AI Flash", "Điều hành chất lượng phát và app ngoài 0 đồng", "Runtime safe boundary"],
@@ -124,6 +138,7 @@ const moduleCopy: Record<ProModule, {
     title: "Kết nối web, mobile, tivi và nền tảng ngoài",
     output: "Bridge: QR ready",
     note: "Chưa có app thì mở đúng trang tải theo thiết bị",
+    canvas: "QRFlow và AI Gateway kết nối WebApp, MobiApp, TiviApp và môi trường ngoài bằng một luồng rõ ràng.",
     cards: [
       ["WebApp", "app.phuclong.live", "ProApp/WebPro"],
       ["MobiApp", "mobi.phuclong.live", "iOS/Android mini"],
@@ -136,6 +151,7 @@ const moduleCopy: Record<ProModule, {
     title: "Bảng quyền hạn, theme, phí và log",
     output: "Boss: control ready",
     note: "2FA mặc định tắt, Boss/User tự bật khi cần",
+    canvas: "Boss thật điều khiển quyền AI, theme, phí Flash, log duyệt bill và các nâng cấp runtime.",
     cards: [
       ["Permission", "5 cấp quyền theo từng AI và tác vụ", "Đổi bất cứ lúc nào"],
       ["Themes", "Mặc định, Rực Rỡ, Pink, Lavender", "Boss mở thêm theme"],
@@ -161,7 +177,7 @@ export default function LongProTiviHome() {
       <section className="lp-protivi-stage" aria-label="Long ProTivi headquarters">
         <header className="lp-protivi-topbar">
           <div>
-            <span className="lp-kicker">Long ProTivi</span>
+            <span className="lp-kicker">Long ProApp</span>
             <h1>Headquarter điều phối livestream và AI</h1>
           </div>
           <div className="lp-screen-readout" aria-label="Screen detection">
@@ -169,6 +185,12 @@ export default function LongProTiviHome() {
             <span>{screen.width} x {screen.height}</span>
           </div>
         </header>
+
+        <nav className="lp-app-shortcuts" aria-label="Long app shortcuts">
+          {appLinks.map(([label, href]) => (
+            <a href={href} key={label}>{label}</a>
+          ))}
+        </nav>
 
         <div className="lp-protivi-grid">
           <aside className="lp-panel lp-nav-panel" aria-label="Primary modules">
@@ -191,13 +213,23 @@ export default function LongProTiviHome() {
               <span className="lp-kicker">{active.kicker}</span>
               <strong>{active.title}</strong>
             </div>
-            <div className="lp-live-canvas">
+            <div className="lp-live-canvas" key={activeModule}>
               <div className="lp-canvas-mark">1920 x 1080</div>
               <div className="lp-canvas-grid">
                 <span />
                 <span />
                 <span />
                 <span />
+              </div>
+              <div className="lp-module-board">
+                <span className="lp-kicker">{modules.find((module) => module.id === activeModule)?.label}</span>
+                <h2>{active.title}</h2>
+                <p>{active.canvas}</p>
+                <div className="lp-module-pills">
+                  {active.cards.slice(0, 3).map(([title]) => (
+                    <span key={title}>{title}</span>
+                  ))}
+                </div>
               </div>
               <div className="lp-live-status">
                 <b>{active.output}</b>
